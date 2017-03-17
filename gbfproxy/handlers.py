@@ -15,6 +15,7 @@ TEMP_SUFFIX = '.temp'
 CONTENT_ENC = 'content-encoding'
 TRANSFER_ENC = 'transfer-encoding'
 CONTENT_LEN = 'content-length'
+ACCESS_CONTROL_ALLOW = 'access-control-allow-origin'
 
 
 def write_file(path, data, url, url_list_path):
@@ -81,7 +82,9 @@ def gbf_caching_handler_factory(gbf_conf, executor, uri_matcher,
                     setattr(response, '_content', data)
                     setattr(response, 'headers', {
                         CONTENT_LEN: str(len(data)),
-                        CONTENT_ENC: 'identity'
+                        CONTENT_ENC: 'identity',
+                        ACCESS_CONTROL_ALLOW: '*'
+
                     })
             else:
                 response = self._fetch_path()
