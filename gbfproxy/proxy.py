@@ -18,7 +18,6 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 
 class GBFProxyServer(object):
     def __init__(self, gbf_conf, handler_cls, server_cls=ThreadedHTTPServer):
-
         self.host = gbf_conf.host
         self.port = gbf_conf.port
         self.protocol = gbf_conf.protocol.upper()

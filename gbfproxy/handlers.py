@@ -14,6 +14,7 @@ F_LIST_LOCK = threading.Lock()
 TEMP_SUFFIX = '.temp'
 CONTENT_ENC = 'content-encoding'
 TRANSFER_ENC = 'transfer-encoding'
+CONTENT_LEN = 'content-length'
 
 
 def write_file(path, data, url, url_list_path):
@@ -61,46 +62,54 @@ def gbf_caching_handler_factory(gbf_conf, executor, uri_matcher,
             super(GBFCachingHandler, self).__init__(*args, **kwargs)
 
         def _fetch_path(self):
-            logging.debug('Opening url: {0}'.format(self.path))
             return requests.get(self.path, headers=self.headers)
 
         def _cache_data(self):
             cache_filename = self.path.split('/')[-1]
             cache_path = os.path.join(self.CACHE_DIR, cache_filename)
+            response = None
 
             if cache_filename and os.path.exists(cache_path):
                 logging.debug('Cache hit: {0} ({1})'.format(self.path,
                     cache_path))
                 with open(cache_path, 'rb') as f:
                     data = f.read()
+                    response = requests.Response()
+                    setattr(response, 'status_code', 200)
+                    setattr(response, '_content', data)
+                    setattr(response, 'headers', {
+                        CONTENT_LEN: str(len(data)),
+                        CONTENT_ENC: 'identity'
+                    })
             else:
-                logging.debug('Cache miss: {0}'.format(self.path))
-                get_resp = self._fetch_path()
-                data = get_resp.content
-                headers = get_resp.headers
+                response = self._fetch_path()
+                data = response.content
+                headers = response.headers
 
                 if cache_filename and self.HEADERS_MATCHER.matches(headers):
+                    logging.debug('Cache miss: {0}'.format(self.path))
                     fut = executor.submit(write_file, cache_path, data,
                         self.path, self.CACHE_LIST_PATH)
 
-            return data
+            return response
 
         def do_GET(self):
             if self.URI_MATCHER.matches(self.path):
-                data = self._cache_data()
+                response = self._cache_data()
             else:
-                data = self._fetch_path().content
+                response = self._fetch_path()
 
-            self.send_response(200)
-            self.end_headers()
-            self.wfile.write(data)
+            self.handle_response(response)
 
         def do_POST(self):
             self.data = self.rfile.read(int(self.headers['Content-Length']))
 
-            response = requests.post(self.path, headers=self.headers,
-                data=self.data)
+            response = requests.post(self.path, headers=self.headers, data=self.data)
+
             self.handle_response(response)
+
+        def do_DELETE(self):
+            self.data = self.rfile.read(int(self.headers['Content-Length']))
 
         def handle_response(self, response):
             if response.status_code < 400:
@@ -108,28 +117,19 @@ def gbf_caching_handler_factory(gbf_conf, executor, uri_matcher,
             else:
                 self.send_error(response.status_code)
 
-            for k, v in response.headers.items():
-                self.send_header(k, v)
-            self.end_headers()
-
             output = response.content
             headers = response.headers
 
-            # gzip
+            # requests already decompressed gzip
             if CONTENT_ENC in headers and \
                     headers[CONTENT_ENC].lower() == 'gzip':
-                buffer = StringIO.StringIO()
-                with gzip.GzipFile(fileobj=buffer, mode='w') as f:
-                    f.write(output)
-                output = buffer.getvalue()
+                headers[CONTENT_ENC] = 'identity'
+                headers[CONTENT_LEN] = str(len(output))
 
-            # chunking
-            if TRANSFER_ENC in headers and \
-                    headers[TRANSFER_ENC].lower() == 'chunked':
-                self.wfile.write('{0}\r\n%s{1}\r\n'.format(len(output),
-                    output))
-                self.wfile.write('0\r\n\r\n')
-            else:
-                self.wfile.write(output)
+            for k, v in headers.items():
+                self.send_header(k, v)
+
+            self.end_headers()
+            self.wfile.write(output)
 
     return GBFCachingHandler
