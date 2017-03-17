@@ -39,3 +39,9 @@ Chrome uses Windows' proxy settings, so you have to tell Windows to use your PAC
 ## Firefox with PAC Files
 
 I think you can tell Firefox to use a PAC file.
+
+## Assets aren't loading or something is missing
+
+Currently, there isn't anything implemented to verify cache data. So things could go wrong. For example, music may never load due to a hiccup when the music is first cached.
+
+In the worst case, you can nuke the entire cache directory and start fresh.
