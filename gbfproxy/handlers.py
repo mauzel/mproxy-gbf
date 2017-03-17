@@ -134,4 +134,7 @@ def gbf_caching_handler_factory(gbf_conf, executor, uri_matcher,
             self.end_headers()
             self.wfile.write(output)
 
+        def log_message(self, fmt, *args):
+            pass
+
     return GBFCachingHandler
