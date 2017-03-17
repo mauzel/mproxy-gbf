@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from gbfproxy.proxy import GBFProxyServer
 from gbfproxy.configparser import GBFConfigParser
-from gbfproxy.matchers import GBFUriMatcher, GBFHeadersMatcher
+from gbfproxy.matchers import GBFUriMatcher, GBFHeadersMatcher, GBFCacheNamer
 from gbfproxy.handlers import gbf_caching_handler_factory
 from concurrent.futures import ThreadPoolExecutor
 import logging
@@ -66,9 +66,10 @@ def main():
     logging.debug('GBF conf: {0}'.format(gbf_conf))
     uri_matcher = GBFUriMatcher(gbf_conf.matcher)
     headers_matcher = GBFHeadersMatcher()
+    cache_namer = GBFCacheNamer()
     executor = ThreadPoolExecutor(5)
     handler_cls = gbf_caching_handler_factory(gbf_conf, executor, uri_matcher,
-        headers_matcher)
+        headers_matcher, cache_namer)
 
     proxy_server = GBFProxyServer(gbf_conf, handler_cls=handler_cls)
 

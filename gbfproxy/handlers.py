@@ -44,11 +44,12 @@ def write_file(path, data, url, url_list_path):
 
 
 def gbf_caching_handler_factory(gbf_conf, executor, uri_matcher,
-    headers_matcher):
+    headers_matcher, cache_namer):
 
     class GBFCachingHandler(BaseHTTPRequestHandler, object):
         CACHE_DIR = None
         CACHE_LIST_PATH = None
+        CACHE_NAMER = None
         EXECUTOR = None
         URI_MATCHER = None
         HEADERS_MATCHER = None
@@ -59,13 +60,14 @@ def gbf_caching_handler_factory(gbf_conf, executor, uri_matcher,
             self.EXECUTOR = executor
             self.URI_MATCHER = uri_matcher
             self.HEADERS_MATCHER = headers_matcher
+            self.CACHE_NAMER = cache_namer
             super(GBFCachingHandler, self).__init__(*args, **kwargs)
 
         def _fetch_path(self):
             return requests.get(self.path, headers=self.headers)
 
         def _cache_data(self):
-            cache_filename = self.path.split('/')[-1]
+            cache_filename = self.CACHE_NAMER.to_cache_name(self.path)
             cache_path = os.path.join(self.CACHE_DIR, cache_filename)
             response = None
 

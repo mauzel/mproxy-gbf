@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import re
+import urlparse
+import hashlib
 import logging
 
 
@@ -17,3 +19,9 @@ class GBFHeadersMatcher(object):
     def matches(self, headers):
         content_type = headers['Content-Type'].lower()
         return 'image' in content_type or 'audio' in content_type
+
+
+class GBFCacheNamer(object):
+    def to_cache_name(self, url):
+        p = urlparse.urlparse(url)
+        return hashlib.sha1(p.path).hexdigest()
