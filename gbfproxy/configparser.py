@@ -3,6 +3,7 @@
 import logging
 import ConfigParser
 import os
+import json
 
 
 class GBFProxyConfig(object):
@@ -14,6 +15,8 @@ class GBFProxyConfig(object):
         self.protocol = None
         self.cache = None
         self.matcher = None
+        self.replacement_domains = []
+        self.replacements = []
 
     def __repr__(self):
         return unicode(vars(self))
@@ -26,6 +29,8 @@ class GBFINIOpts(object):
     PROTO = 'protocol'
     CACHE = 'cache'
     MATCHER = 'matcher'
+    REPLACEMENTS = 'replacements'
+    REPLACEMENT_DOMAINS = 'replacement_domains'
 
 
 class GBFConfigParser(object):
@@ -57,8 +62,12 @@ class GBFConfigParser(object):
         gbf_conf.port = int(config.get(self.INI_GBFPROXY_SEC, GBFINIOpts.PORT))
         gbf_conf.protocol = config.get(self.INI_GBFPROXY_SEC, GBFINIOpts.PROTO)
         gbf_conf.cache = os.path.abspath(config.get(self.INI_GBFPROXY_SEC,
-            GBFINIOpts.CACHE))
+                                                    GBFINIOpts.CACHE))
         gbf_conf.matcher = config.get(self.INI_GBFPROXY_SEC,
-            GBFINIOpts.MATCHER)
+                                      GBFINIOpts.MATCHER)
+        gbf_conf.replacements = json.loads(config.get(
+            self.INI_GBFPROXY_SEC, GBFINIOpts.REPLACEMENTS))
+        gbf_conf.replacement_domains = json.loads(config.get(
+            self.INI_GBFPROXY_SEC, GBFINIOpts.REPLACEMENT_DOMAINS))
 
         return gbf_conf

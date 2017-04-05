@@ -76,6 +76,9 @@ def main():
     while True:
         try:
             proxy_server.run()
+        except KeyboardInterrupt:
+            logging.info('Shutting down...')
+            exit()
         except:
             logging.exception('Got error while running')
 
