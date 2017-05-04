@@ -36,6 +36,10 @@ def write_file(path, data, url, url_list_path):
 
     os.rename(temp_path, path)
 
+    if os.stat(path).st_size == 0:
+        logging.error('Bad file size: {0}'.format(path))
+        os.remove(path)
+
     logging.debug('Updating cache list: {0}'.format(url_list_path))
     F_LIST_LOCK.acquire()
     with open(url_list_path, 'ab') as csvf:
