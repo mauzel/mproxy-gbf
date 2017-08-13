@@ -34,6 +34,10 @@ def write_file(path, data, url, url_list_path):
     with open(temp_path, 'wb') as f:
         f.write(data)
 
+    if os.path.getsize(temp_path) == 0:
+        logging.debug('Got zero byte cache file: {0}'.format(url))
+        return
+
     os.rename(temp_path, path)
 
     logging.debug('Updating cache list: {0}'.format(url_list_path))
