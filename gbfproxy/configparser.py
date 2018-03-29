@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import logging
-import ConfigParser
+import configparser
 import os
 
 
-class GBFProxyConfig(object):
+class GBFProxyConfig:
     """Represents configuration values used throughout this program."""
 
     def __init__(self):
@@ -16,10 +16,10 @@ class GBFProxyConfig(object):
         self.matcher = None
 
     def __repr__(self):
-        return unicode(vars(self))
+        return str(vars(self))
 
 
-class GBFINIOpts(object):
+class GBFINIOpts:
     """Represents the keys for configuration options in INI files."""
     HOST = 'host'
     PORT = 'port'
@@ -28,7 +28,7 @@ class GBFINIOpts(object):
     MATCHER = 'matcher'
 
 
-class GBFConfigParser(object):
+class GBFConfigParser:
     INI_GBFPROXY_SEC = 'GBFPROXY'
 
     def parse(self, path):
@@ -43,7 +43,7 @@ class GBFConfigParser(object):
         return self._parse_ini(path)
 
     def _parse_ini(self, path):
-        config = ConfigParser.SafeConfigParser()
+        config = configparser.SafeConfigParser()
 
         logging.debug('attempting to parse ini from {0}'.format(path))
         config.read(path)
@@ -56,9 +56,6 @@ class GBFConfigParser(object):
         gbf_conf.host = config.get(self.INI_GBFPROXY_SEC, GBFINIOpts.HOST)
         gbf_conf.port = int(config.get(self.INI_GBFPROXY_SEC, GBFINIOpts.PORT))
         gbf_conf.protocol = config.get(self.INI_GBFPROXY_SEC, GBFINIOpts.PROTO)
-        gbf_conf.cache = os.path.abspath(config.get(self.INI_GBFPROXY_SEC,
-            GBFINIOpts.CACHE))
-        gbf_conf.matcher = config.get(self.INI_GBFPROXY_SEC,
-            GBFINIOpts.MATCHER)
-
+        gbf_conf.cache = os.path.abspath(config.get(self.INI_GBFPROXY_SEC, GBFINIOpts.CACHE))
+        gbf_conf.matcher = config.get(self.INI_GBFPROXY_SEC, GBFINIOpts.MATCHER)
         return gbf_conf
