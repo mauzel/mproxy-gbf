@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from BaseHTTPServer import BaseHTTPRequestHandler
+from http.server import BaseHTTPRequestHandler
 import threading
 import csv
 import os
 import gzip
 import requests
-import StringIO
+import io
 import logging
 
 
@@ -35,8 +35,9 @@ def write_file(path, data, url, url_list_path):
         f.write(data)
 
     if os.path.getsize(temp_path) == 0:
-        logging.debug('Got zero byte cache file: {0}'.format(url))
-        return
+         logging.debug('Got zero byte cache file: {0}'.format(url))
+         return
+
 
     os.rename(temp_path, path)
 
@@ -46,16 +47,14 @@ def write_file(path, data, url, url_list_path):
 
     logging.debug('Updating cache list: {0}'.format(url_list_path))
     F_LIST_LOCK.acquire()
-    with open(url_list_path, 'ab') as csvf:
+    with open(url_list_path, 'a') as csvf:
         w = csv.writer(csvf, quoting=csv.QUOTE_ALL)
         w.writerow([os.path.basename(path), url, len(data)])
     F_LIST_LOCK.release()
 
 
-def gbf_caching_handler_factory(gbf_conf, executor, uri_matcher,
-    headers_matcher, cache_namer):
-
-    class GBFCachingHandler(BaseHTTPRequestHandler, object):
+def gbf_caching_handler_factory(gbf_conf, executor, uri_matcher, headers_matcher, cache_namer):
+    class GBFCachingHandler(BaseHTTPRequestHandler):
         CACHE_DIR = None
         CACHE_LIST_PATH = None
         CACHE_NAMER = None
@@ -101,8 +100,7 @@ def gbf_caching_handler_factory(gbf_conf, executor, uri_matcher,
 
                 if cache_filename and self.HEADERS_MATCHER.matches(headers):
                     logging.debug('Cache miss: {0}'.format(self.path))
-                    fut = executor.submit(write_file, cache_path, data,
-                        self.path, self.CACHE_LIST_PATH)
+                    fut = executor.submit(write_file, cache_path, data, self.path, self.CACHE_LIST_PATH)
 
             return response
 
@@ -147,5 +145,6 @@ def gbf_caching_handler_factory(gbf_conf, executor, uri_matcher,
 
         def log_message(self, fmt, *args):
             pass
+
 
     return GBFCachingHandler

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from BaseHTTPServer import HTTPServer
-from SocketServer import ThreadingMixIn
+from http.server import HTTPServer
+from socketserver import ThreadingMixIn
 import socket
 import logging
 
@@ -16,15 +16,14 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     daemon_threads = True
 
 
-class GBFProxyServer(object):
+class GBFProxyServer:
     def __init__(self, gbf_conf, handler_cls, server_cls=ThreadedHTTPServer):
         self.host = gbf_conf.host
         self.port = gbf_conf.port
         self.protocol = gbf_conf.protocol.upper()
 
         assert self.protocol in SUPPORTED_PROTOCOLS, 'Got unsupported ' \
-            'protocol: {0}. Supported protocols: {1}'.format(
-            protocol, SUPPORTED_PROTOCOLS)
+            'protocol: {0}. Supported protocols: {1}'.format(protocol, SUPPORTED_PROTOCOLS)
 
         listen_on = (self.host, self.port)
         self.server = server_cls(listen_on, handler_cls)
