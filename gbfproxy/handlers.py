@@ -54,7 +54,7 @@ def write_file(path, data, url, url_list_path):
 
 
 def gbf_caching_handler_factory(gbf_conf, executor, uri_matcher, headers_matcher, cache_namer):
-    class GBFCachingHandler(BaseHTTPRequestHandler, object):
+    class GBFCachingHandler(BaseHTTPRequestHandler):
         CACHE_DIR = None
         CACHE_LIST_PATH = None
         CACHE_NAMER = None
