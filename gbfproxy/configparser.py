@@ -16,7 +16,7 @@ class GBFProxyConfig:
         self.matcher = None
 
     def __repr__(self):
-        return str(vars(self))
+        return unicode(vars(self))
 
 
 class GBFINIOpts:
@@ -56,6 +56,9 @@ class GBFConfigParser:
         gbf_conf.host = config.get(self.INI_GBFPROXY_SEC, GBFINIOpts.HOST)
         gbf_conf.port = int(config.get(self.INI_GBFPROXY_SEC, GBFINIOpts.PORT))
         gbf_conf.protocol = config.get(self.INI_GBFPROXY_SEC, GBFINIOpts.PROTO)
-        gbf_conf.cache = os.path.abspath(config.get(self.INI_GBFPROXY_SEC, GBFINIOpts.CACHE))
-        gbf_conf.matcher = config.get(self.INI_GBFPROXY_SEC, GBFINIOpts.MATCHER)
+        gbf_conf.cache = os.path.abspath(config.get(self.INI_GBFPROXY_SEC,
+            GBFINIOpts.CACHE))
+        gbf_conf.matcher = config.get(self.INI_GBFPROXY_SEC,
+            GBFINIOpts.MATCHER)
+
         return gbf_conf
