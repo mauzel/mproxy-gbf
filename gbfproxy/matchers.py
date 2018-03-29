@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import re
-import urlparse
+import urllib.parse
 import hashlib
 import logging
 
@@ -23,5 +23,5 @@ class GBFHeadersMatcher(object):
 
 class GBFCacheNamer(object):
     def to_cache_name(self, url):
-        p = urlparse.urlparse(url)
-        return hashlib.sha1(p.path).hexdigest()
+        p = urllib.parse.urlparse(url)
+        return hashlib.sha1((p.path).encode('utf-8')).hexdigest()
