@@ -16,7 +16,7 @@ class GBFProxyConfig:
         self.matcher = None
 
     def __repr__(self):
-        return unicode(vars(self))
+        return str(vars(self))
 
 
 class GBFINIOpts:
