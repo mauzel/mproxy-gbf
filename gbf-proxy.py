@@ -11,15 +11,26 @@ import coloredlogs
 import os
 import argparse
 
-LOG_FMT = ('%(asctime)s.%(msecs)03d ' '[(%(threadName)s) %(filename)s %(funcName)s %(lineno)d] ' '%(levelname)s: %(message)s')
+
+LOG_FMT = ('%(asctime)s.%(msecs)03d '
+           '[(%(threadName)s) %(filename)s %(funcName)s %(lineno)d] '
+           '%(levelname)s: %(message)s')
 GBF_INI_FILENAME = 'gbf-proxy.ini'
 GBF_LOG_FILE = os.path.join('logs', 'gbf-proxy.log')
 
+
 PARSER = argparse.ArgumentParser(description='granblue fantasy caching proxy')
-PARSER.add_argument('-c', '--config', default=GBF_INI_FILENAME, help='path to an INI file (default: {0})'.format(GBF_INI_FILENAME))
-PARSER.add_argument('-d', '--debug', action='store_true', help='set logging level to debug mode')
-PARSER.add_argument('-l', '--logfile', default=GBF_LOG_FILE, help='set logfile (default: {0})'.format(GBF_LOG_FILE))
-PARSER.add_argument('--console-output', action='store_true', help='output logs to console instead of to file')
+PARSER.add_argument('-c', '--config', default=GBF_INI_FILENAME,
+                    help='path to an INI file (default: {0})'.format(
+                        GBF_INI_FILENAME))
+PARSER.add_argument('-d', '--debug', action='store_true',
+                    help='set logging level to debug mode')
+PARSER.add_argument('-l', '--logfile', default=GBF_LOG_FILE,
+                    help='set logfile (default: {0})'.format(
+                        GBF_LOG_FILE))
+PARSER.add_argument('--console-output', action='store_true',
+                    help='output logs to console instead of to file')
+
 
 def configure_logging(args, fmt):
     log_level = logging.INFO
@@ -37,7 +48,8 @@ def configure_logging(args, fmt):
             except OSError as e:
                 if e.errno != errno.EEXIST:
                     raise
-        handler = logging.handlers.TimedRotatingFileHandler(args.logfile, when='midnight', backupCount=7)
+        handler = logging.handlers.TimedRotatingFileHandler(
+            args.logfile, when='midnight', backupCount=7)
         formatter = logging.Formatter(fmt)
         handler.setFormatter(formatter)
         logger = logging.getLogger()
@@ -56,7 +68,9 @@ def main():
     headers_matcher = GBFHeadersMatcher()
     cache_namer = GBFCacheNamer()
     executor = ThreadPoolExecutor(5)
-    handler_cls = gbf_caching_handler_factory(gbf_conf, executor, uri_matcher, headers_matcher, cache_namer)
+    handler_cls = gbf_caching_handler_factory(gbf_conf, executor, uri_matcher,
+        headers_matcher, cache_namer)
+
     proxy_server = GBFProxyServer(gbf_conf, handler_cls=handler_cls)
 
     while True:
