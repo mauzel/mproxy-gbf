@@ -24,13 +24,15 @@ You can use PAC files so that you don't need to proxy ALL your browser traffic t
 
 ```
 function FindProxyForURL(url, host) {
-	if (shExpMatch(url, "*.granbluefantasy.jp/*")) {
+	if (shExpMatch(url, "*.granbluefantasy.jp/*")
+		&& !shExpMatch(url, "*game.granbluefantasy.jp/(authentication|ob/r)*")) {
 		return "PROXY localhost:8080";
 	}
 
 	return "DIRECT";
 }
 ```
+This PAC file is also included in this repository as `gbf-proxy.pac`.
 
 ## Chrome on Windows with PAC files
 
