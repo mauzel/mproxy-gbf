@@ -5,7 +5,7 @@ import configparser
 import os
 
 
-class GBFProxyConfig(object):
+class GBFProxyConfig:
     """Represents configuration values used throughout this program."""
 
     def __init__(self):
@@ -19,7 +19,7 @@ class GBFProxyConfig(object):
         return str(vars(self))
 
 
-class GBFINIOpts(object):
+class GBFINIOpts:
     """Represents the keys for configuration options in INI files."""
     HOST = 'host'
     PORT = 'port'
@@ -28,7 +28,7 @@ class GBFINIOpts(object):
     MATCHER = 'matcher'
 
 
-class GBFConfigParser(object):
+class GBFConfigParser:
     INI_GBFPROXY_SEC = 'GBFPROXY'
 
     def parse(self, path):
