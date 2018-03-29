@@ -16,7 +16,7 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     daemon_threads = True
 
 
-class GBFProxyServer(object):
+class GBFProxyServer:
     def __init__(self, gbf_conf, handler_cls, server_cls=ThreadedHTTPServer):
         self.host = gbf_conf.host
         self.port = gbf_conf.port
