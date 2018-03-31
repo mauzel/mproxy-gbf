@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from BaseHTTPServer import BaseHTTPRequestHandler
+from http.server import BaseHTTPRequestHandler
 import threading
 import csv
 import os
 import gzip
 import requests
-import StringIO
+import io
 import logging
 
 
@@ -46,7 +46,7 @@ def write_file(path, data, url, url_list_path):
 
     logging.debug('Updating cache list: {0}'.format(url_list_path))
     F_LIST_LOCK.acquire()
-    with open(url_list_path, 'ab') as csvf:
+    with open(url_list_path, 'a') as csvf:
         w = csv.writer(csvf, quoting=csv.QUOTE_ALL)
         w.writerow([os.path.basename(path), url, len(data)])
     F_LIST_LOCK.release()
@@ -55,7 +55,7 @@ def write_file(path, data, url, url_list_path):
 def gbf_caching_handler_factory(gbf_conf, executor, uri_matcher,
     headers_matcher, cache_namer):
 
-    class GBFCachingHandler(BaseHTTPRequestHandler, object):
+    class GBFCachingHandler(BaseHTTPRequestHandler):
         CACHE_DIR = None
         CACHE_LIST_PATH = None
         CACHE_NAMER = None
