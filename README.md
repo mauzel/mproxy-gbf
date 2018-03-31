@@ -10,11 +10,12 @@ Modern browsers will cache a ton of data, but what if it's not enough to cache y
 # How to use this software
 
 0. Don't use this software.
-1. Modify `gbf-proxy.ini` if you want.
-2. Setup environment and run:
+1. Download and install Python 3 (https://www.python.org/downloads/)
+2. Modify `gbf-proxy.ini` if you want.
+3. Setup environment and run:
 ```
-    pip install -r requirements.txt
-    python gbf-proxy.py
+    py -m pip install -r requirements.txt
+    py gbf-proxy.py
 ```
 4. Point your browser to the proxy configuration in `gbf-proxy.ini` (default: `localhost:8080`).
 
@@ -36,7 +37,7 @@ This PAC file is also included in this repository as `gbf-proxy.pac`.
 
 ## Chrome on Windows with PAC files
 
-Chrome uses Windows' proxy settings, so you have to tell Windows to use your PAC file.
+Chrome uses Windows' proxy settings, so you have to tell Windows to use your PAC file. (Hint: Internet Options)
 
 ## Firefox with PAC Files
 
